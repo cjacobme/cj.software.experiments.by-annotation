@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import cj.software.experiments.annotation.control.entity.Customer;
 import cj.software.experiments.annotation.control.entity.Item;
+import cj.software.experiments.annotation.control.entity.Offer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -28,5 +29,15 @@ class IgnorableFieldsCollectorTest {
         Set<String> ignorables = collector.collect(Customer.class);
         assertThat(ignorables).as("ignorables").isEqualTo(Set.of("name"));
     }
+
+    @Test
+    void forOffer() {
+        Set<String> ignorables = collector.collect(Offer.class);
+        assertThat(ignorables).as("ignorables")
+                .isEqualTo(Set.of(
+                        "customer.name",
+                        "items.singlePrice",
+                        "items.count"));
+   }
 }
 
