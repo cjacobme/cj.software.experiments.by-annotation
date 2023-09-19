@@ -35,7 +35,7 @@ public class IgnorableFieldsCollector {
         String classname = fieldClass.getName();
         Set<String> result;
         if (classname.startsWith("cj.software.experiments.annotation.control.entity")) {
-            result = collectMyEntity(name, fieldClass);
+            result = collectFromEntity(name, fieldClass);
         } else if (classname.equals("java.util.List")) {
             result = collectFromList(field, name);
         } else {
@@ -44,7 +44,7 @@ public class IgnorableFieldsCollector {
         return result;
     }
 
-    private Set<String> collectMyEntity (String fieldName, Class<?> fieldClass) {
+    private Set<String> collectFromEntity(String fieldName, Class<?> fieldClass) {
         Set<String> ignorablesOfField = collect(fieldClass);
         Set<String> result = HashSet.newHashSet(ignorablesOfField.size());
         for (String ignorable : ignorablesOfField) {
@@ -60,7 +60,7 @@ public class IgnorableFieldsCollector {
         String parameterizedClassName = parameterizedClass.getName();
         Set<String> result;
         if (parameterizedClassName.startsWith("cj.software.experiments.annotation.control.entity")) {
-            result = collectMyEntity(name, parameterizedClass);
+            result = collectFromEntity(name, parameterizedClass);
         } else {
             result = Set.of();
         }
