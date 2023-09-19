@@ -1,5 +1,6 @@
 package cj.software.experiments.annotation.control.util;
 
+import cj.software.experiments.annotation.control.entity.Customer;
 import cj.software.experiments.annotation.control.entity.Item;
 import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,6 +58,24 @@ class MarkedValidatorTest {
                 .as("error messages")
                 .extracting("propertyPath", "messageTemplate", "invalidValue")
                 .containsExactlyInAnyOrder(tuple("totalPrice", "{jakarta.validation.constraints.DecimalMin.message}", -15.2));
+    }
+
+    @Test
+    void customerValidOnlyForSummary() {
+        Customer customer = Customer.builder().withMail("a.b@c.d").build();
+        Set<ConstraintViolation<Customer>> violations = markedValidator.validate(customer);
+        assertThat(violations).as("constraint violations").isEmpty();
+    }
+
+    @Test
+    void customerMailMissing() {
+        Customer customer = Customer.builder().build();
+        Set<ConstraintViolation<Customer>> violations = markedValidator.validate(customer);
+        List<ErrorMessage> errorMessages = toErrorMessages(violations);
+        assertThat(errorMessages)
+                .as("error messages")
+                .extracting("propertyPath", "messageTemplate", "invalidValue")
+                .containsExactlyInAnyOrder(tuple("mail", "{jakarta.validation.constraints.NotBlank.message}", null));
     }
 
     private <T> List<ErrorMessage> toErrorMessages(Set<ConstraintViolation<T>> violations) {
