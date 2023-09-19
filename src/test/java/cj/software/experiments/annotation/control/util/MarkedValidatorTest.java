@@ -2,7 +2,9 @@ package cj.software.experiments.annotation.control.util;
 
 import cj.software.experiments.annotation.control.entity.Customer;
 import cj.software.experiments.annotation.control.entity.Item;
+import cj.software.experiments.annotation.control.entity.Offer;
 import jakarta.validation.ConstraintViolation;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -72,10 +74,46 @@ class MarkedValidatorTest {
         Customer customer = Customer.builder().build();
         Set<ConstraintViolation<Customer>> violations = markedValidator.validate(customer);
         List<ErrorMessage> errorMessages = toErrorMessages(violations);
+        assertThat(errorMessages).as("error messages").hasSize(1);
+        ErrorMessage errorMessage = errorMessages.get(0);
+        SoftAssertions softy = new SoftAssertions();
+        softy.assertThat(errorMessage.getMessageTemplate()).as("message template").isEqualTo("{jakarta.validation.constraints.NotBlank.message}");
+        softy.assertThat(errorMessage.getPropertyPath()).as("property path").isEqualTo("mail");
+        softy.assertThat(errorMessage.getInvalidValue()).as("invalid value").isNull();
+        softy.assertAll();
+    }
+
+    @Test
+    void offerValidOnlyForSummary() {
+        Item item = Item.builder()
+                .withDescription("description")
+                .withTotalPrice(13.14)
+                .build();
+        Customer customer = Customer.builder().withMail("a.b@c.d").build();
+        Offer offer = Offer.builder()
+                .withCustomer(customer)
+                .withItems(item)
+                .withTotalPrice(1423.3)
+                .build();
+        Set<ConstraintViolation<Offer>> violations = markedValidator.validate(offer);
+        assertThat(violations).as("constraint violations").isEmpty();
+    }
+
+    @Test
+    void customerInOfferInvalid() {
+        Customer customer = Customer.builder().build();
+        Offer offer = Offer.builder()
+                .withCustomer(customer)
+                .withTotalPrice(-23.45)
+                .build();
+        Set<ConstraintViolation<Offer>> violations = markedValidator.validate(offer);
+        List<ErrorMessage> errorMessages = toErrorMessages(violations);
         assertThat(errorMessages)
                 .as("error messages")
                 .extracting("propertyPath", "messageTemplate", "invalidValue")
-                .containsExactlyInAnyOrder(tuple("mail", "{jakarta.validation.constraints.NotBlank.message}", null));
+                .containsExactlyInAnyOrder(
+                        tuple("totalPrice", "{jakarta.validation.constraints.DecimalMin.message}", -23.45),
+                        tuple("customer.mail", "{jakarta.validation.constraints.NotBlank.message}", null));
     }
 
     private <T> List<ErrorMessage> toErrorMessages(Set<ConstraintViolation<T>> violations) {

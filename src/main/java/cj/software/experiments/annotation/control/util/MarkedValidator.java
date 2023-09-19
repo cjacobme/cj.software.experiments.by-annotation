@@ -19,8 +19,10 @@ public class MarkedValidator {
         Set<ConstraintViolation<T>> result = new HashSet<>();
         Set<String> toBeValidateds = markedFieldsCollector.collect(object.getClass());
         for (String toBeValidated : toBeValidateds) {
-            Set<ConstraintViolation<T>> fieldViolations = validator.validateProperty(object, toBeValidated);
-            result.addAll(fieldViolations);
+            if (!toBeValidated.startsWith("items")) {   //TODO the collector should return a triple (class, parameterized class, path)
+                Set<ConstraintViolation<T>> fieldViolations = validator.validateProperty(object, toBeValidated);
+                result.addAll(fieldViolations);
+            }
         }
         return result;
     }
