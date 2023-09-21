@@ -34,7 +34,7 @@ class IgnorableComparatorTest {
                 .isEqualTo(item2);
     }
 
-    private String[] toStringArray (Set<String> source) {
+    private String[] toStringArray(Set<String> source) {
         int size = source.size();
         String[] result = new String[size];
         result = source.toArray(result);

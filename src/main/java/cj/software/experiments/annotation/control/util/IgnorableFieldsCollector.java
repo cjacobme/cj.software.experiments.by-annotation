@@ -1,7 +1,5 @@
 package cj.software.experiments.annotation.control.util;
 
-import cj.software.experiments.annotation.control.entity.Summary;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -9,19 +7,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class IgnorableFieldsCollector {
+
+    private final SummaryAnnotationUtil summaryAnnotationUtil = new SummaryAnnotationUtil();
+
     public Set<String> collect(Class<?> clazz) {
         Set<String> result = new HashSet<>();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
             if (!Modifier.isStatic(field.getModifiers())) {
-                Summary summary = field.getAnnotation(Summary.class);
                 String name = field.getName();
-                if (summary == null) {
+                boolean summary = summaryAnnotationUtil.isSummaryAnnotated(field);
+                if (!summary) {
                     result.add(name);
-                }
-                else {
+                } else {
                     Set<String> recursive = recursive(field, name);
-                    if (recursive != null && ! recursive.isEmpty()) {
+                    if (recursive != null && !recursive.isEmpty()) {
                         result.addAll(recursive);
                     }
                 }
@@ -56,7 +56,7 @@ public class IgnorableFieldsCollector {
 
     private Set<String> collectFromList(Field field, String name) {
         ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
-        Class<?> parameterizedClass = (Class<?>)parameterizedType.getActualTypeArguments()[0];
+        Class<?> parameterizedClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
         String parameterizedClassName = parameterizedClass.getName();
         Set<String> result;
         if (parameterizedClassName.startsWith("cj.software.experiments.annotation.control.entity")) {

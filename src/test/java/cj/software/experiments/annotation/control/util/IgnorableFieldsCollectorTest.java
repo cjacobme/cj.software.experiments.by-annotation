@@ -1,7 +1,5 @@
 package cj.software.experiments.annotation.control.util;
 
-import static org.assertj.core.api.Assertions.*;
-
 import cj.software.experiments.annotation.control.entity.Customer;
 import cj.software.experiments.annotation.control.entity.Item;
 import cj.software.experiments.annotation.control.entity.Offer;
@@ -9,6 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class IgnorableFieldsCollectorTest {
     private static IgnorableFieldsCollector collector;
@@ -38,6 +38,6 @@ class IgnorableFieldsCollectorTest {
                         "customer.name",
                         "items.singlePrice",
                         "items.count"));
-   }
+    }
 }
 

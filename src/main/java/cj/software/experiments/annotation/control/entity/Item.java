@@ -4,6 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.groups.Default;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,8 +13,7 @@ public class Item implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @NotBlank
-    @Summary
+    @NotBlank(groups = {Default.class, Summary.class})
     private String description;
 
     @NotNull
@@ -24,9 +24,8 @@ public class Item implements Serializable {
     @Min(1)
     private Integer count;
 
-    @NotNull
-    @DecimalMin("0.01")
-    @Summary
+    @NotNull(groups = {Default.class, Summary.class})
+    @DecimalMin(value = "0.01", groups = {Default.class, Summary.class})
     private Double totalPrice;
 
     private Item() {

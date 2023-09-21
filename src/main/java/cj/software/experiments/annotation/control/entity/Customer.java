@@ -1,6 +1,7 @@
 package cj.software.experiments.annotation.control.entity;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.groups.Default;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,8 +13,7 @@ public class Customer implements Serializable {
     @NotBlank
     private String name;
 
-    @Summary
-    @NotBlank
+    @NotBlank(groups = {Default.class, Summary.class})
     private String mail;
 
     private Customer() {
